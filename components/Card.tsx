@@ -13,7 +13,7 @@ const Card = ({ recording }: Props) => {
   const liveUrl = `https://twitcasting.tv/${recording.screen_id}`
 
   return (
-    <div className='mx-3 space-y-1 rounded-xl bg-slate-200 py-6 shadow-2xl'>
+    <div className='mx-3 space-y-1 rounded-xl border-2 border-indigo-400 bg-slate-200 py-6 shadow-2xl'>
       <div className='flex justify-center'>
         <Link href={thumbnailUrl}>
           <Image
@@ -49,14 +49,14 @@ const Card = ({ recording }: Props) => {
             alt={`${recording.screen_id}'s icon`}
             height={45}
             width={45}
-            className='rounded-3xl'
+            className='rounded-3xl border-2 border-red-600 p-0.5'
           />
         </Link>
 
         <Link href={liveUrl}>
-          <div>
-            <span className='block text-base font-semibold'>{recording.user_name}</span>
-            <span className='block text-sm text-gray-400'>@{recording.screen_id}</span>
+          <div className='w-[150px]'>
+            <span className='block truncate text-base font-semibold'>{recording.user_name}</span>
+            <span className='block truncate text-sm text-gray-400'>@{recording.screen_id}</span>
           </div>
         </Link>
       </div>
