@@ -1,48 +1,61 @@
+import dayjs from 'dayjs'
 import Card from '../components/Card'
 import { Recording } from '../types/recording'
 import Head from 'next/head'
 import { useEffect, useRef, useState } from 'react'
 
-const getRecordings = async () => {
-  const response = await fetch(`${process.env.NEXT_PUBLIC_TARS_SERVER_ENDPOINT}/recordings`)
+const getRecordings = async (endpoint: string) => {
+  const response = await fetch(`${endpoint}/recordings`)
   const data = await response.json()
 
   return data.recordings as Recording[]
 }
 
-const startRecording = async (screen_id: string) => {
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_TARS_SERVER_ENDPOINT}/recordings/${screen_id}`,
-    {
-      method: 'POST'
-    }
-  )
+const startRecording = async (endpoint: string, screen_id: string) => {
+  const response = await fetch(`${endpoint}/recordings/${screen_id}`, {
+    method: 'POST'
+  })
+  const data = await response.json()
+
+  return data as Recording
 }
 
-const stopRecording = async (screen_id: string) => {
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_TARS_SERVER_ENDPOINT}/recordings/${screen_id}`,
-    {
-      method: 'DELETE'
-    }
-  )
+const stopRecording = async (endpoint: string, screen_id: string) => {
+  const response = await fetch(`${endpoint}/recordings/${screen_id}`, {
+    method: 'DELETE'
+  })
+
+  const data = await response.json()
+
+  return data
 }
 
 export default function Home() {
   const [recordings, setRecordings] = useState<Recording[]>([])
   const [refresh, setRefresh] = useState<boolean>(false)
+  const [updateAt, setUpdateAt] = useState<string>('---')
+
+  const [endpoint, setEndpoint] = useState<string>('')
 
   const recordingInputRef = useRef<HTMLInputElement>(null)
 
+  const intervalInputRef = useRef<HTMLInputElement>(null)
+  const [intervalSec, setIntervalSec] = useState<number>(30)
+
   useEffect(() => {
-    getRecordings().then(data => {
+    if (endpoint === '') {
+      setEndpoint(`http://${window.location.hostname}:${window.location.port}`)
+    }
+    setUpdateAt('----/--/-- --:--:--')
+    getRecordings(endpoint).then(data => {
       setRecordings(data)
+      setUpdateAt(dayjs().format('YYYY/MM/DD HH:mm:ss'))
     })
     const interval = setInterval(() => {
       setRefresh(previous => !previous)
-    }, 30000)
+    }, intervalSec * 1000)
     return () => clearInterval(interval)
-  }, [refresh])
+  }, [refresh, endpoint, intervalSec])
 
   return (
     <>
@@ -51,6 +64,27 @@ export default function Home() {
       </Head>
 
       <main className='mx-10 my-10 space-y-10'>
+        <div className='flex w-1/2 items-center space-x-5 border-2 px-5 py-2'>
+          <span>更新間隔 (秒)</span>
+          <input
+            type='text'
+            ref={intervalInputRef}
+            defaultValue='30'
+            className='w-16 rounded-3xl border-2 border-indigo-200 bg-gray-100 px-5 py-0.5 outline-none focus:border-emerald-400'
+          />
+          <button
+            className='rounded-2xl border-2 border-violet-400 px-4 py-1.5'
+            onClick={() => {
+              const data: number = Number(intervalInputRef.current?.value)
+                ? Number(intervalInputRef.current?.value)
+                : 30
+              setIntervalSec(data)
+            }}
+          >
+            設定
+          </button>
+          <span className='font-medium'>最終更新: {updateAt}</span>
+        </div>
         <div className='flex space-x-4 py-5'>
           <h3 className='text-xl font-bold'>・録画タスク ({recordings?.length})</h3>
           <div className='space-x-5'>
@@ -62,7 +96,7 @@ export default function Home() {
             <button
               className='rounded-2xl border-2 border-blue-400 px-4 py-1.5'
               onClick={() => {
-                startRecording(recordingInputRef.current?.value as string)
+                startRecording(endpoint, recordingInputRef.current?.value as string)
                 setRefresh(previous => !previous)
               }}
             >
@@ -71,7 +105,7 @@ export default function Home() {
             <button
               className='rounded-2xl border-2 border-red-400 px-4 py-1.5'
               onClick={() => {
-                stopRecording(recordingInputRef.current?.value as string)
+                stopRecording(endpoint, recordingInputRef.current?.value as string)
                 setRefresh(previous => !previous)
               }}
             >

@@ -15,7 +15,7 @@ const Card = ({ recording }: Props) => {
   return (
     <div className='mx-3 space-y-1 rounded-xl border-2 border-indigo-400 bg-slate-200 py-6 shadow-2xl'>
       <div className='flex justify-center'>
-        <Link href={thumbnailUrl}>
+        <Link href={liveUrl}>
           <Image
             src={thumbnailUrl}
             alt={`${recording.user_name}'s thumbnail`}
