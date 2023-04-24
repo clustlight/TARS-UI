@@ -1,0 +1,13 @@
+node_modules
+.env.local
+.env.sample
+
+.next
+.idea
+.github
+.vscode
+
+!/.next/standalone/**
+!/.next/static/**
+!/public/**
+!/next.config.js
