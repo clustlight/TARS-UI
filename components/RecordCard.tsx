@@ -1,4 +1,4 @@
-import { Recording } from '../types/recording'
+import { Recording } from '../types/tars'
 import dayjs from 'dayjs'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -8,7 +8,7 @@ type Props = {
   recording: Recording
 }
 
-const Card = ({ recording }: Props) => {
+const RecordCard = ({ recording }: Props) => {
   const thumbnailUrl = `https://apiv2.twitcasting.tv/users/${recording.screen_id}/live/thumbnail?size=large&position=latest`
   const liveUrl = `https://twitcasting.tv/${recording.screen_id}`
 
@@ -32,7 +32,7 @@ const Card = ({ recording }: Props) => {
           <div className='my-2 space-y-1'>
             <span className='mx-1 block font-semibold'>{recording.live_title}</span>
             <span className='mx-1 block'>
-              {recording.live_subtitle ? recording.live_subtitle : 'null'}
+              {recording.live_subtitle ? recording.live_subtitle : '-----'}
             </span>
             <span className='mx-1 block text-sm font-light text-gray-600'>
               {dayjs.unix(recording.start_time).format('YYYY/MM/DD HH:mm:ss')} -{' '}
@@ -64,4 +64,4 @@ const Card = ({ recording }: Props) => {
   )
 }
 
-export default Card
+export default RecordCard

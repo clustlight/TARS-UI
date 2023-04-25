@@ -1,8 +1,9 @@
 import dayjs from 'dayjs'
-import Card from '../components/Card'
-import { Recording } from '../types/recording'
+import RecordCard from '../components/RecordCard'
+import { Recording, User } from '../types/tars'
 import Head from 'next/head'
 import { useEffect, useRef, useState } from 'react'
+import ProfileCard from '../components/ProfileCard'
 
 const getRecordings = async (endpoint: string) => {
   const response = await fetch(`${endpoint}/recordings`)
@@ -30,14 +31,42 @@ const stopRecording = async (endpoint: string, screen_id: string) => {
   return data
 }
 
+const getUsers = async (endpoint: string) => {
+  const response = await fetch(`${endpoint}/users`)
+  const data = await response.json()
+
+  return data.users as User[]
+}
+
+const addUser = async (endpoint: string, screen_id: string) => {
+  const response = await fetch(`${endpoint}/subscriptions/${screen_id}`, {
+    method: 'POST'
+  })
+  const data = await response.json()
+
+  return data as User
+}
+
+const removeUser = async (endpoint: string, screen_id: string) => {
+  const response = await fetch(`${endpoint}/subscriptions/${screen_id}`, {
+    method: 'DELETE'
+  })
+
+  const data = await response.json()
+
+  return data as User
+}
+
 export default function Home() {
   const [recordings, setRecordings] = useState<Recording[]>([])
+  const [users, setUsers] = useState<User[]>([])
   const [refresh, setRefresh] = useState<boolean>(false)
   const [updateAt, setUpdateAt] = useState<string>('---')
 
   const [endpoint, setEndpoint] = useState<string>('')
 
   const recordingInputRef = useRef<HTMLInputElement>(null)
+  const userInputRef = useRef<HTMLInputElement>(null)
 
   const intervalInputRef = useRef<HTMLInputElement>(null)
   const [intervalSec, setIntervalSec] = useState<number>(30)
@@ -51,6 +80,11 @@ export default function Home() {
       setRecordings(data)
       setUpdateAt(dayjs().format('YYYY/MM/DD HH:mm:ss'))
     })
+
+    getUsers(endpoint).then(data => {
+      setUsers(data)
+    })
+
     const interval = setInterval(() => {
       setRefresh(previous => !previous)
     }, intervalSec * 1000)
@@ -123,19 +157,44 @@ export default function Home() {
         <div>
           <div className='grid grid-cols-5 gap-2 md:grid-cols-6 md:gap-10'>
             {recordings &&
-              recordings.map(recording => <Card key={recording.live_id} recording={recording} />)}
+              recordings.map(recording => (
+                <RecordCard key={recording.live_id} recording={recording} />
+              ))}
           </div>
         </div>
 
         <div className='flex space-x-4 py-5'>
-          <h3 className='text-xl font-bold'>・自動録画対象 (未実装)</h3>
+          <h3 className='text-xl font-bold'>・自動録画対象 ({users.length})</h3>
           <div className='space-x-5'>
             <input
               type='text'
+              ref={userInputRef}
               className='rounded-3xl border-2 border-indigo-200 bg-gray-100 px-5 py-0.5 outline-none focus:border-emerald-400'
             />
-            <button className='rounded-2xl border-2 border-blue-400 px-4 py-1.5'>追加</button>
-            <button className='rounded-2xl border-2 border-red-400 px-4 py-1.5'>削除</button>
+            <button
+              className='rounded-2xl border-2 border-blue-400 px-4 py-1.5'
+              onClick={() => {
+                addUser(endpoint, userInputRef.current?.value as string)
+                setRefresh(previous => !previous)
+              }}
+            >
+              追加
+            </button>
+            <button
+              className='rounded-2xl border-2 border-red-400 px-4 py-1.5'
+              onClick={() => {
+                removeUser(endpoint, userInputRef.current?.value as string)
+                setRefresh(previous => !previous)
+              }}
+            >
+              削除
+            </button>
+          </div>
+        </div>
+
+        <div>
+          <div className='grid grid-cols-5 gap-4 lg:gap-10'>
+            {users && users.map(user => <ProfileCard key={user.user_id} user={user} />)}
           </div>
         </div>
       </main>
