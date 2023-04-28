@@ -98,7 +98,7 @@ export default function Home() {
       </Head>
 
       <main className='mx-10 my-10 space-y-10'>
-        <div className='flex w-1/2 items-center space-x-5 border-2 px-5 py-2'>
+        <div className='items-center space-x-5 border-2 px-5 py-2 xl:flex xl:w-1/2'>
           <span>更新間隔 (秒)</span>
           <input
             type='text'
@@ -117,11 +117,11 @@ export default function Home() {
           >
             設定
           </button>
-          <span className='font-medium'>最終更新: {updateAt}</span>
+          <span className='block font-medium'>最終更新: {updateAt}</span>
         </div>
-        <div className='flex space-x-4 py-5'>
-          <h3 className='text-xl font-bold'>・録画タスク ({recordings?.length})</h3>
-          <div className='space-x-5'>
+        <div className='items-center space-x-4 py-5 max-lg:space-y-5 xl:flex xl:justify-between'>
+          <h3 className='font-bold xl:text-xl'>・録画タスク ({recordings?.length})</h3>
+          <div className='flex space-x-5'>
             <input
               type='text'
               ref={recordingInputRef}
@@ -155,7 +155,7 @@ export default function Home() {
         </div>
 
         <div>
-          <div className='grid grid-cols-5 gap-2 md:grid-cols-6 md:gap-10'>
+          <div className='grid gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 lg:gap-10 xl:grid-cols-5 xl:gap-10'>
             {recordings &&
               recordings.map(recording => (
                 <RecordCard key={recording.live_id} recording={recording} />
@@ -163,8 +163,8 @@ export default function Home() {
           </div>
         </div>
 
-        <div className='flex space-x-4 py-5'>
-          <h3 className='text-xl font-bold'>・自動録画対象 ({users.length})</h3>
+        <div className='flex items-center space-x-4 py-5 xl:justify-between'>
+          <h3 className='font-bold xl:text-xl'>・自動録画対象 ({users?.length})</h3>
           <div className='space-x-5'>
             <input
               type='text'
@@ -193,7 +193,7 @@ export default function Home() {
         </div>
 
         <div>
-          <div className='grid grid-cols-5 gap-4 lg:gap-10'>
+          <div className='grid gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 lg:gap-10 xl:grid-cols-5 xl:gap-x-14'>
             {users && users.map(user => <ProfileCard key={user.user_id} user={user} />)}
           </div>
         </div>
