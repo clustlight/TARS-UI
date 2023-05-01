@@ -9,7 +9,7 @@ type Props = {
 }
 
 const RecordCard = ({ recording }: Props) => {
-  const thumbnailUrl = `https://apiv2.twitcasting.tv/users/${recording.screen_id}/live/thumbnail?size=large&position=latest`
+  const thumbnailUrl = `https://apiv2.twitcasting.tv/users/${recording.screen_id}/live/thumbnail?size=large&position=beginning`
   const liveUrl = `https://twitcasting.tv/${recording.screen_id}`
 
   return (
