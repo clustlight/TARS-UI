@@ -73,7 +73,9 @@ export default function Home() {
 
   useEffect(() => {
     if (endpoint === '') {
-      setEndpoint(`http://${window.location.hostname}:${window.location.port}`)
+      setEndpoint(
+        `${window.location.protocol}//${window.location.hostname}:${window.location.port}`
+      )
     }
     setUpdateAt('----/--/-- --:--:--')
     getRecordings(endpoint).then(data => {
